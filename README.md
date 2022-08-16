@@ -11,12 +11,23 @@ O projet contém as seguintes tecnologia:
 
 Executando a aplicação via maven com o comando:
 ```
-mvnw spring-boot:run
+mvn spring-boot:run
 ```
 
 URL swagger local:
 ```
 http://localhost:8080/swagger-ui/index.html#/
+```
+
+URL Gerenciador H2 local:
+```
+http://localhost:8080/h2-console
+
+Query:
+SELECT * FROM TBL_AFINIDADE;
+SELECT * FROM  TBL_ESTADO;
+SELECT * FROM  TBL_PESSOA;
+SELECT * FROM  TBL_SCORE;
 ```
 
 OBS.:
