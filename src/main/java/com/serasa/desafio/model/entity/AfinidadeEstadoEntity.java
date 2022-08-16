@@ -10,6 +10,8 @@ import lombok.ToString;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -27,9 +29,10 @@ public class AfinidadeEstadoEntity implements Serializable {
 
     @Id
     @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_AFINIDADE", referencedColumnName = "id", nullable = false)
     private AfinidadeEntity afinidade;
 
@@ -65,7 +68,7 @@ public class AfinidadeEstadoEntity implements Serializable {
         }
 
         public AfinidadeEstadoEntity build() {
-            return new AfinidadeEstadoEntity(GenerateUtil.code(), afinidade, siglaEstado);
+            return new AfinidadeEstadoEntity(id, afinidade, siglaEstado);
         }
 
         public String toString() {

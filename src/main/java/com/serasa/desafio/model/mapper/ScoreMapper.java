@@ -13,7 +13,7 @@ public interface ScoreMapper {
     ScoreMapper INSTANCE = Mappers.getMapper(ScoreMapper.class);
 
     @Mappings({
-            @Mapping(target="id", expression = "java(com.serasa.desafio.utils.GenerateUtil.code())"),
+            //@Mapping(target="id", expression = "java(com.serasa.desafio.utils.GenerateUtil.code())"),
             @Mapping(target="descricao", expression = "java(dto.getScoreDescricao())")
     })
     ScoreEntity from(ScoreRequestDTO dto);

@@ -5,6 +5,7 @@ import com.serasa.desafio.model.entity.ScoreEntity;
 import com.serasa.desafio.model.mapper.ScoreMapper;
 import com.serasa.desafio.repository.IScoreRepository;
 import com.serasa.desafio.service.IScoreService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ public class ScoreServiceImpl implements IScoreService {
     private final IScoreRepository scoreRepository;
 
     @Override
-    public void inserir(ScoreRequestDTO dto) {
+    public void inserir(@NonNull ScoreRequestDTO dto) {
         ScoreEntity from = ScoreMapper.INSTANCE.from(dto);
         scoreRepository.save(from);
     }

@@ -11,13 +11,13 @@ import com.serasa.desafio.repository.IAfinidadeRepository;
 import com.serasa.desafio.repository.IPessoaRepository;
 import com.serasa.desafio.repository.IScoreRepository;
 import com.serasa.desafio.service.IPessoaService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,26 +32,27 @@ public class PessoaServiceImpl implements IPessoaService {
     private final IScoreRepository scoreRepository;
 
     @Override
-    public void inserir(PessoaRequestDTO dto) {
+    public void inserir(@NonNull PessoaRequestDTO dto) {
         PessoaEntity pessoa = PessoaMapper.INSTANCE.from(dto);
         pessoaRepository.save(pessoa);
     }
 
     @Override
-    public PessoaResponseDTO findById(Long codigo) {
-        PessoaEntity pessoa = pessoaRepository.findById(codigo)
+    public PessoaResponseDTO findById(@NonNull Long codigo) {
+        return pessoaRepository.findById(codigo)
+                .map(p -> {
+                    var score = getScore(p.getScore());
+                    var estados = getEstados(p.getRegiao());
+
+                    return new PessoaResponseDTO(
+                            p.getNome(),
+                            p.getTelefone(),
+                            p.getIdade(),
+                            score,
+                            estados
+                    );
+                })
                 .orElseThrow(() -> new BusinessException(NO_CONTENT, StringUtils.EMPTY));
-
-        ScoreEntity score = getScore(pessoa.getScore());
-        Set<String> estados = getEstados(pessoa.getRegiao());
-
-        return new PessoaResponseDTO(
-                pessoa.getNome(),
-                pessoa.getTelefone(),
-                pessoa.getIdade(),
-                score.getDescricao(),
-                estados
-        );
     }
 
     @Override
@@ -60,22 +61,22 @@ public class PessoaServiceImpl implements IPessoaService {
                 .filter(p -> !CollectionUtils.isEmpty(p))
                 .orElseThrow(() -> new BusinessException(NO_CONTENT, StringUtils.EMPTY))
                 .stream().map(p -> {
-                    ScoreEntity score = getScore(p.getScore());
-                    Set<String> estados = getEstados(p.getRegiao());
+                    var score = getScore(p.getScore());
+                    var estados = getEstados(p.getRegiao());
 
                     return new PessoaResponseDTO(
                             p.getNome(),
                             p.getCidade(),
                             p.getEstado(),
-                            score.getDescricao(),
+                            score,
                             estados
                     );
                 }).collect(Collectors.toList());
     }
 
-    private ScoreEntity getScore(Long score) {
-        return scoreRepository.findScore(score)
-                .orElseThrow(() -> new BusinessException(NO_CONTENT, StringUtils.EMPTY));
+    private String getScore(Long score) {
+        return scoreRepository.findScore(score).map(ScoreEntity::getDescricao)
+                .orElse("Não identificado");
     }
 
     private Set<String> getEstados(String regiao) {

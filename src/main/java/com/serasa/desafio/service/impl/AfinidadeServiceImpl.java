@@ -30,6 +30,10 @@ public class AfinidadeServiceImpl implements IAfinidadeService {
 
         afinidadeRepository.findByRegiaoEEstados(dto.getRegiao()).ifPresent(estadosExistentes -> {
             novosEstados.set(validarEstados(novosEstados.get(), estadosExistentes.getEstados()));
+            if(CollectionUtils.isEmpty(novosEstados.get())) {
+                throw new BusinessException(UNPROCESSABLE_ENTITY, String.format("Todos os estados já estão cadastado para a região %s", dto.getRegiao()));
+            }
+
             estadosExistentes.addEstados(novosEstados.get());
             afinidade.set(estadosExistentes);
         });
@@ -37,15 +41,10 @@ public class AfinidadeServiceImpl implements IAfinidadeService {
     }
 
     private Set<String> validarEstados(Set<String> estadosNovos, Set<AfinidadeEstadoEntity> estadosExistentes) {
-        Set<String> novaListaEstados = estadosNovos.stream().filter(l1 ->
+        return estadosNovos.stream().filter(l1 ->
                 !estadosExistentes.stream()
                         .map(AfinidadeEstadoEntity::getSiglaEstado)
                         .anyMatch(l2 -> l2.equalsIgnoreCase(l1))
         ).collect(Collectors.toSet());
-
-        if(CollectionUtils.isEmpty(novaListaEstados)) {
-            throw new BusinessException(UNPROCESSABLE_ENTITY, "Todos os estados já estão cadastado para a região solicitada");
-        }
-        return novaListaEstados;
     }
 }

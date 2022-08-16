@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 
 import static com.serasa.desafio.mock.MockTest.scoreRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,6 +44,12 @@ public class ScoreServiceImplTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("Deve retornar exception qaundo dto null")
+    public void deveRetornarExceptionQaundoDtoNull() {
+        assertThrows(NullPointerException.class, () -> scoreService.inserir(null));
+    }
+
+    @Test
     @DisplayName("Deve cadastrar faixa score com sucesso")
     public void deveCadastrarFaixaScoreComSucesso() {
         when(scoreRepository.save(any(ScoreEntity.class))).thenAnswer(i -> i.getArguments()[0]);
@@ -59,5 +66,4 @@ public class ScoreServiceImplTest extends AbstractTest {
     public void afterEach() throws Exception {
         autoCloseable.close();
     }
-
 }
